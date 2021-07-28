@@ -1,12 +1,25 @@
+mod errors;
 mod models;
-mod services;
-use std::env;
 
 use anyhow::Result;
+use models::{account::Account, transaction::Transaction};
+use std::{collections::HashMap, env};
+use tokio::fs::File;
+use tokio_stream::StreamExt;
+
+type TransactionsMap = HashMap<u32, Transaction>;
+type AccountsMap = HashMap<u16, Account>;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let file_path = env::args().nth(1).expect("CSV path required");
-    println!("Hello, World");
+    let mut rdr = csv_async::AsyncDeserializer::from_reader(File::open(file_path).await?);
+    let mut records = rdr.deserialize::<Transaction>();
+
+    while let Some(record) = records.next().await {
+        let transaction = record?;
+        println!("{:#?}", transaction);
+    }
+
     Ok(())
 }
