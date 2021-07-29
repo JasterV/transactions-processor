@@ -23,7 +23,7 @@ async fn main() -> Result<()> {
 
     while let Some(record) = records.next().await {
         let transaction = record?;
-        
+
         if addr_map.contains_key(&transaction.client) {
            addr_map.get(&transaction.client).unwrap().do_send::<Command>(transaction.into());
         } else {
@@ -33,12 +33,23 @@ async fn main() -> Result<()> {
             addr.do_send::<Command>(transaction.into());
         }
     }
+    
+    fetch_and_display_accounts(&addr_map).await?;
+    Ok(())
+}
 
-    let mut result: Vec<Account> = vec![];
-    for addr in addr_map.values() {
+async fn fetch_and_display_accounts(actors: &AccountActors) -> Result<()> {
+    println!("client,available,held,total,locked");
+    for addr in actors.values() {
         let account: Account = addr.send(Stop).await?;
-        result.push(account);
+        println!(
+            "{},{},{},{},{}", 
+            account.get_client(), 
+            account.get_available(), 
+            account.get_held(),
+            account.get_total(),
+            account.get_locked()
+        )  
     }
-
     Ok(())
 }

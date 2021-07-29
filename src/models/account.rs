@@ -23,6 +23,16 @@ impl Account {
         }
     }
 
+    pub fn get_client(&self) -> u16 { self.client }
+
+    pub fn get_available(&self) -> f32 { self.available }
+
+    pub fn get_held(&self) -> f32 { self.held }
+
+    pub fn get_total(&self) -> f32 { self.total }
+
+    pub fn get_locked(&self) -> bool { self.locked }
+
     pub fn deposit(&mut self, amount: f32) -> Result<()> {
         self.assert_lock()?;
         self.available += amount;
