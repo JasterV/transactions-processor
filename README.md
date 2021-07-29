@@ -1,5 +1,7 @@
 # Transactions processor
 
+> Process CSV data representing account transactions and display the accounts data
+
 ## Dependencies
 
 - **tokio && tokio_stream**: Async runtime that allows us to solve the problem
