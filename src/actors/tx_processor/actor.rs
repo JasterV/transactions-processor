@@ -15,15 +15,12 @@ impl TxProcessor {
     }
 
     async fn send_tx(&mut self, transaction: Transaction) -> Result<()> {
-        if self.accounts.contains_key(&transaction.client) {
-            self.accounts.get(&transaction.client).unwrap().send(transaction.into()).await?;
-         } else {
-             let actor = AccountActor::new(transaction.client);
-             let addr = run_actor(actor);
-             self.accounts.insert(transaction.client, addr.clone());
-             addr.send(transaction.into()).await?;
-         }
-         Ok(())
+        let addr = self.accounts.entry(transaction.client).or_insert_with(|| {
+            let actor = AccountActor::new(transaction.client);
+            run_actor(actor)
+        });
+        addr.send(transaction.into()).await?;
+        Ok(())
     }
 
     async fn stop_actors(&self) -> Result<Vec<Account>> {

@@ -44,12 +44,10 @@ impl AccountActor {
     }
 
     fn dispute(&mut self, tx_id: u32) -> Result<()> {
+        let client_id = self.account.get_client();
         let tx = self.transactions
         .get_mut(&tx_id)
-        .ok_or(AccountError::TxNotFound(
-            tx_id, 
-            self.account.get_client()
-        ))?;
+        .ok_or(AccountError::TxNotFound(tx_id, client_id))?;
         if tx.ty == TransactionType::Deposit && !tx.disputed {
             self.account.held(tx.amount)?;
             tx.disputed = true;
@@ -58,12 +56,10 @@ impl AccountActor {
     }
 
     fn resolve(&mut self, tx_id: u32) -> Result<()> {
+        let client_id = self.account.get_client();
         let tx = self.transactions
         .get_mut(&tx_id)
-        .ok_or(AccountError::TxNotFound(
-            tx_id, 
-            self.account.get_client()
-        ))?;
+        .ok_or(AccountError::TxNotFound(tx_id, client_id))?;
         if tx.disputed {
             self.account.free(tx.amount)?;
             tx.disputed = false;
@@ -72,12 +68,10 @@ impl AccountActor {
     }
 
     fn chargeback(&mut self, tx_id: u32) -> Result<()> {
+        let client_id = self.account.get_client();
         let tx = self.transactions
         .get_mut(&tx_id)
-        .ok_or(AccountError::TxNotFound(
-            tx_id, 
-            self.account.get_client()
-        ))?;
+        .ok_or(AccountError::TxNotFound(tx_id, client_id))?;
         if tx.disputed {
             self
             .account

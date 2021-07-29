@@ -14,8 +14,8 @@ impl From<Transaction> for Command {
     fn from(tx: Transaction) -> Self {
         match tx.ty {
             TransactionType::Chargeback => Command::Chargeback(tx.tx),
-            TransactionType::Deposit => Command::Deposit(tx.tx, tx.amount),
-            TransactionType::Withdrawal => Command::Withdraw(tx.tx, tx.amount),
+            TransactionType::Deposit => Command::Deposit(tx.tx, tx.amount.unwrap()),
+            TransactionType::Withdrawal => Command::Withdraw(tx.tx, tx.amount.unwrap()),
             TransactionType::Dispute => Command::Dispute(tx.tx),
             TransactionType::Resolve => Command::Resolve(tx.tx)
         }

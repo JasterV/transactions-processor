@@ -43,7 +43,7 @@ impl Account {
     pub fn withdraw(&mut self, amount: f32) -> Result<()> {
         self.assert_lock()?;
         if amount > self.available {
-            Err(TransactionError::WithdrawError)?;
+            return Err(TransactionError::WithdrawError.into());
         }
         self.available -= amount;
         self.total -= amount;
@@ -53,7 +53,7 @@ impl Account {
     pub fn held(&mut self, amount: f32) -> Result<()> {
         self.assert_lock()?;
         if amount > self.available {
-            Err(TransactionError::HeldError)?;
+            return Err(TransactionError::HeldError.into());
         }
         self.available -= amount;
         self.held += amount;
@@ -63,7 +63,7 @@ impl Account {
     pub fn free(&mut self, amount: f32) -> Result<()> {
         self.assert_lock()?;
         if amount > self.held {
-            Err(TransactionError::UnheldError)?;
+            return Err(TransactionError::UnheldError.into());
         }
         self.held -= amount;
         self.available += amount;
@@ -73,7 +73,7 @@ impl Account {
     pub fn chargeback(&mut self, amount: f32) -> Result<()> {
         self.assert_lock()?;
         if amount > self.held {
-            Err(TransactionError::UnheldError)?;
+            return Err(TransactionError::UnheldError.into());
         }
         self.held -= amount;
         self.total -= amount;
@@ -83,7 +83,7 @@ impl Account {
 
     fn assert_lock(&self) -> Result<()> {
         if self.locked {
-            Err(TransactionError::AccountLocked(self.client))?
+            Err(TransactionError::AccountLocked(self.client).into())
         } else {
             Ok(())
         }

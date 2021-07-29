@@ -20,6 +20,6 @@ pub struct Transaction {
     pub ty: TransactionType,
     pub client: u16,
     pub tx: u32,
-    #[serde(default)]
-    pub amount: f32,
+    pub amount: Option<f32>,
 }
+

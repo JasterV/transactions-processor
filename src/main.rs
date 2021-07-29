@@ -7,6 +7,7 @@ mod actors;
 
 use anyhow::Result;
 use csv_async::DeserializeRecordsStream;
+use models::transaction::TransactionType;
 use std::env;
 use tokio::{fs::File, sync::{mpsc::Sender, oneshot}};
 use tokio_stream::StreamExt;
@@ -27,9 +28,11 @@ async fn _main(mut records: DeserializeRecordsStream<'_, File, Transaction>) -> 
 
     while let Some(record) = records.next().await {
         let transaction = record?;
+        if (transaction.ty == TransactionType::Withdrawal || transaction.ty == TransactionType::Deposit) && transaction.amount.is_none() { 
+            panic!("Transaction {} does not have a valid amount", transaction.tx) 
+        }
         tx_processor_addr.send(Command::SendTx(transaction)).await?;
     }
-    
     let accounts = send_stop(&tx_processor_addr).await?;
     display_accounts(&accounts);
     Ok(())
