@@ -2,9 +2,6 @@ use crate::models::{account::Account, responder::Responder, transaction::Transac
 
 #[derive(Debug)]
 pub enum Command {
-    SendTx {
-        client: u16,
-        transaction: Transaction
-    },
+    SendTx(Transaction),
     Stop(Responder<Vec<Account>>)
 }
