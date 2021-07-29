@@ -17,7 +17,7 @@
 
 ## Architecture
 
-This project is based on the Actor Model.
+This project is based on the [Actor Model](https://www.brianstorti.com/the-actor-model/).
 
 - Each actor run on its own thread (tokio tasks in this case)
 - Actors do not share state
