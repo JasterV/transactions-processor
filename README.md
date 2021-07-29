@@ -1,6 +1,7 @@
 # Transactions processor
 
-> Process CSV data representing account transactions and display the accounts data
+> Process CSV data representing account transactions and display the accounts
+> data
 
 ## Dependencies
 
@@ -17,7 +18,8 @@
 
 ## Architecture
 
-This project is based on the [Actor Model](https://www.brianstorti.com/the-actor-model/).
+This project is based on the
+[Actor Model](https://www.brianstorti.com/the-actor-model/).
 
 - Each actor run on its own thread (tokio tasks in this case)
 - Actors do not share state
@@ -34,6 +36,8 @@ action.
 
 This actor is responsible for managing an `Account` object and a map of the
 transactions done on that account.
+
+![architecture diagram](assets/arch_diagram.jpg)
 
 ### Why this architecture?
 
