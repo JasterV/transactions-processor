@@ -1,19 +1,14 @@
-use crate::models::{transaction::{Transaction, TransactionType}, account::Account};
-use actix::Message;
+use crate::{models::{account::Account, responder::Responder, transaction::{Transaction, TransactionType}}};
 
-#[derive(Message, Debug)]
-#[rtype(result = "()")]
+#[derive(Debug)]
 pub enum Command {
     Withdraw(f32),
     Deposit(f32),
     Dispute(u32),
     Resolve(u32),
     Chargeback(u32),
+    Stop(Responder<Account>)
 }
-
-#[derive(Message)]
-#[rtype(result = "Account")]
-pub struct Stop;
 
 impl From<Transaction> for Command {
     fn from(tx: Transaction) -> Self {
