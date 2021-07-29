@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::errors::TransactionError;
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Clone, Debug)]
 pub struct Account {
     client: u16,
     available: f32,
