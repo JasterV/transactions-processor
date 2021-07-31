@@ -23,15 +23,25 @@ impl Account {
         }
     }
 
-    pub fn get_client(&self) -> u16 { self.client }
+    pub fn get_client(&self) -> u16 {
+        self.client
+    }
 
-    pub fn get_available(&self) -> f32 { self.available }
+    pub fn get_available(&self) -> f32 {
+        self.available
+    }
 
-    pub fn get_held(&self) -> f32 { self.held }
+    pub fn get_held(&self) -> f32 {
+        self.held
+    }
 
-    pub fn get_total(&self) -> f32 { self.total }
+    pub fn get_total(&self) -> f32 {
+        self.total
+    }
 
-    pub fn get_locked(&self) -> bool { self.locked }
+    pub fn get_locked(&self) -> bool {
+        self.locked
+    }
 
     pub fn deposit(&mut self, amount: f32) -> Result<()> {
         self.assert_lock()?;
@@ -87,5 +97,78 @@ impl Account {
         } else {
             Ok(())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+    use anyhow::Result;
+
+    #[test]
+    fn test_account_deposit() -> Result<()> {
+        let mut account = Account::new(1);
+        assert_eq!(account.get_total(), 0.0);
+        assert_eq!(account.get_available(), 0.0);
+        assert_eq!(account.get_held(), 0.0);
+        account.deposit(1000.0)?;
+        assert_eq!(account.get_total(), 1000.0);
+        assert_eq!(account.get_available(), 1000.0);
+        assert_eq!(account.get_held(), 0.0);
+        Ok(())
+    }
+
+    #[test]
+    fn test_account_withdraw() -> Result<()> {
+        let mut account = Account::new(1);
+        account.deposit(1000.0)?;
+        account.withdraw(250.0)?;
+        assert_eq!(account.get_total(), 750.0);
+        assert_eq!(account.get_available(), 750.0);
+        assert_eq!(account.get_held(), 0.0);
+        Ok(())
+    }
+
+    #[test]
+    fn test_account_held() -> Result<()> {
+        let mut account = Account::new(1);
+        account.deposit(1000.0)?;
+        account.held(250.0)?;
+        assert_eq!(account.get_total(), 1000.0);
+        assert_eq!(account.get_available(), 750.0);
+        assert_eq!(account.get_held(), 250.0);
+        Ok(())
+    }
+
+    #[test]
+    fn test_account_free_held() -> Result<()> {
+        let mut account = Account::new(1);
+        account.deposit(1000.0)?;
+        account.held(250.0)?;
+        account.free(100.0)?;
+        assert_eq!(account.get_total(), 1000.0);
+        assert_eq!(account.get_available(), 850.0);
+        assert_eq!(account.get_held(), 150.0);
+        Ok(())
+    }
+
+    #[test]
+    fn test_account_chargeback() -> Result<()> {
+        let mut account = Account::new(1);
+        account.deposit(1000.0)?;
+        account.held(250.0)?;
+        assert_eq!(account.get_locked(), false);
+        account.chargeback(250.0)?;
+        assert_eq!(account.get_total(), 750.0);
+        assert_eq!(account.get_available(), 750.0);
+        assert_eq!(account.get_held(), 0.0);
+        assert_eq!(account.get_locked(), true);
+        assert!(account.deposit(1.0).is_err());
+        assert!(account.withdraw(1.0).is_err());
+        assert!(account.free(1.0).is_err());
+        assert!(account.held(1.0).is_err());
+        assert!(account.chargeback(1.0).is_err());
+        Ok(())
     }
 }
