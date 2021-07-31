@@ -22,4 +22,3 @@ pub struct Transaction {
     pub tx: u32,
     pub amount: Option<f32>,
 }
-
