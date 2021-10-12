@@ -48,4 +48,4 @@ and it ensures to not have data races.
 
 ## Author
 
-Víctor Martínez <victorcoder2@gmail.com>
+Víctor Martínez <jaster.victor@gmail.com>
